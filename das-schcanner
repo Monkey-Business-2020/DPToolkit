@@ -1,0 +1,73 @@
+#! /bin/bash
+
+printf "\n"
+
+echo "DAS SCHCANNER is a creation of da man Norseman."
+echo "This scanner will perform an arp scan, fping scan and nbtscan."
+echo "It then greps each .txt created and puts it in one .txt which can be used for "
+echo "further enumeration and scanning with nmap etc. eventually nmap will be incorporated."
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+CYAN='\033[0;36m'
+YELLOW='\033[1;33m'
+nc='\033[0m'
+
+printf "\n"
+
+echo -e "[+] ${RED}\e[1mDAS SCHCANNER\e[0m v1.0${nc} [+]"
+
+printf "\n"
+
+echo "Please enter the IP Range you wish to scan: "
+
+printf "\n"
+
+read iprange
+
+printf "\n"
+
+echo -e "[+] Starting ${GREEN} Arp-Scan ${nc} [+]"
+
+sudo arp-scan -I eth0 $iprange > ARPSCAN.txt
+
+printf "\n"
+
+echo -e "[+] Saving Output in to ${YELLOW}ARPSCAN.txt${nc} [+]"
+
+printf "\n"
+
+echo -e "[+] Starting ${GREEN}Fping${nc} [+]"
+
+printf "\n" 
+
+sudo fping -agqs -r 1 $iprange > FPING.txt
+
+echo -e "[+] Saving Output to ${YELLOW}FPING.txt${nc} [+]"
+
+printf "\n"
+
+echo -e "[+] Starting ${GREEN}nbtscan${nc} [+]"
+
+printf "\n"
+
+sudo nbtscan -r $iprange > NBTSCAN.txt
+
+echo -e "[+] Saving output to ${YELLOW}NBTSCAN.txt${nc} [+]"
+
+printf "\n"
+
+echo -e "[+] Sorting out all IP's now and storing in IPs.txt [+]"
+
+cat ARPSCAN.txt FPING.txt NBTSCAN.txt | grep -oE "\b((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\b" | sort -u >> ALLDONE.txt
+x=$(wc -l ALLDONE.txt)
+echo "Total Hosts Alive: " >> ALLDONE.txt
+echo $x >> ALLDONE.txt
+
+#rm ARPSCAN.txt FPING.txt NBTSCAN.txt
+
+printf "\n"
+
+echo -e "[+] ${CYAN}SCANNING COMPLETED AND SAVED AS${nc} ${YELLOW}ALLDONE.txt${nc} [+]"
+
+printf "\n"
