@@ -1,5 +1,5 @@
 #! /bin/bash
-
+clear;
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 CYAN='\033[0;36m'
@@ -16,24 +16,31 @@ ____________            _____           _ _    _ _
 @Norseman2018
 '
 
-printf "\n"
+if [[ $EUID -ne 0 ]]; then
+        echo -e "\n\n\n\n\nRUN ME AS ${RED}ROOT${nc}!!!!!\n\n\n\n"
+        exit 1
+fi
 
-echo -e "${GREEN}1 - Stealth Scan"
-echo -e "2 - Start Das-Schcanner"
-echo -e "3 - Common Port scan"
-echo -e "4 - Enable/disable Local web Server"
-echo -e "5 - NBT scan"
-echo -e "6 - ARP Scan"
-echo -e "7 - FPING scan"
-echo -e "8 - HOST's ALIVE${nc}"
+myipeth=$(ifconfig eth0 | grep "inet " | awk '{print$2}')
+myipwlan=$(ifconfig wlan0 | grep "inet " | awk '{print$2}')
 
-printf "\n"
+echo -e "\nYour Current IP address for ETH0: ${RED}$myipeth${nc}"
+echo -e "\nYour Current IP address for WLAN: ${RED}$myipwlan${nc}\n"
+
+echo -e "\nOPTIONS: \t\t\t\t DESCRIPTION:"
+echo -e "${GREEN}1 - Stealth Scan${nc} \t\t\t - nmap -sS -Pn -n <IPADDRESS> -T4 -oN stealth.txt"
+echo -e "${GREEN}2 - Start Das-Schcanner${nc} \t\t - ./das-schanner"
+echo -e "${GREEN}3 - Common Port scan${nc} \t\t\t - nmap -sSV -p 21,22,23,25,80,443,445 <IPADDRESS>"
+echo -e "${GREEN}4 - Enable/disable Local web Server${nc} \t - service apache2 start/stop"
+echo -e "${GREEN}5 - NBT scan${nc} \t\t\t\t - sudo nbtscan -r <IPADDRESS>"
+echo -e "${GREEN}6 - ARP Scan${nc} \t\t\t\t - sudo arp-scan -I eth0 <IPADDRESS>"
+echo -e "${GREEN}7 - FPING scan${nc} \t\t\t\t - sudo fping -agqs -r 1 <IPADDRESS>"
+echo -e "${GREEN}8 - CE Find HOST's ALIVE${nc} \t\t - ping -c 2 <IPADDRESS>"
+echo -e "${GREEN}9 - Netdiscover${nc} \t\t\t - sudo netdiscover -i <NETWORKDEVICE>\n"
 
 read -p "Please Choose from one of the options by entering the number: " option
 
-printf "\n"
-
-echo "You selected option:" $option
+echo -e "\nYou selected option:" $option
 
 printf "\n"
 
@@ -106,10 +113,27 @@ then
 
 elif [ $option == 8 ]
 then
-        read -p "Enter IP addresses to check seperated by spaces (e.g 10.0.0.1 10.1.1.0 10.1.2.1: " ipcount;
+        read -p "Enter IP addresses to check seperated by spaces (e.g 10.0.0.1 10.1.1.0 10.1.2.1): " ipcount;
         for ip in $ipcount; do
                 ping -c 2 $ip
         done
+
+elif [ $option == 9 ]
+then
+        read -p "Please enter the network device (e.g eth0 or wlan0): " netdev;
+        echo -e "\n\n\n${CYAN}[+] Starting Netdiscover on IP: $netdev [+]${nc}"
+        sleep 2; clear
+        echo -e "\n\n\n\n\n\n\n\n\n\nStarting in 5\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        sleep 1; clear
+        echo -e "\n\n\n\n\n\n\n\n\n\n${CYAN}Starting in 4${nc}\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        sleep 1; clear
+        echo -e "\n\n\n\n\n\n\n\n\n\n${RED}Starting in 3${nc}\n\n\n\n\n\n\n\n\n\n\n\n\n"
+        sleep 1; clear
+        echo -e "\n\n\n\n\n\n\n\n\n\n${YELLOW}Starting in 2${nc}\n\n\n\n\n\n"
+        sleep 1; clear
+        echo -e "\n\n\n\n\n\n\n\n\n\n${GREEN}Starting in 1${nc}\n\n"
+        sleep 0.5; clear
+        sudo netdiscover -i $netdev
 
 else
         echo "Unknown choice was selected"
